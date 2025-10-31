@@ -246,8 +246,7 @@ newman run postman-collection.json
 
 # Ejecutar con reporte HTML
 newman run postman-collection.json -r htmlextra
-
-
+```
 
 #### Flujos de prueba incluidos
 
