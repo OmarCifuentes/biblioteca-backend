@@ -1,0 +1,2387 @@
+{
+  "info": {
+    "name": "Biblioteca API - Automated Tests",
+    "description": "Suite completa de tests automatizados",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3000/api"
+    },
+    {
+      "key": "token_normal",
+      "value": ""
+    },
+    {
+      "key": "token_admin",
+      "value": ""
+    },
+    {
+      "key": "user_normal_id",
+      "value": ""
+    },
+    {
+      "key": "user_otro_id",
+      "value": ""
+    },
+    {
+      "key": "admin_id",
+      "value": ""
+    },
+    {
+      "key": "book_id",
+      "value": ""
+    },
+    {
+      "key": "book_reserved_id",
+      "value": ""
+    },
+    {
+      "key": "reservation_id",
+      "value": ""
+    },
+    {
+      "key": "email_normal",
+      "value": ""
+    },
+    {
+      "key": "email_otro",
+      "value": ""
+    },
+    {
+      "key": "timestamp",
+      "value": ""
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "if (!pm.collectionVariables.get('timestamp')) {",
+          "  pm.collectionVariables.set('timestamp', Date.now());",
+          "}"
+        ]
+      }
+    }
+  ],
+  "item": [
+    {
+      "name": "00 - Setup & Auth",
+      "item": [
+        {
+          "name": "Setup - Register Normal User 1",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"✅ Status 201 Created\", function() {",
+                  "  pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test(\"✅ Success is true\", function() {",
+                  "  const res = pm.response.json();",
+                  "  pm.expect(res.success).to.be.true;",
+                  "});",
+                  "",
+                  "pm.test(\"✅ User has _id\", function() {",
+                  "  const res = pm.response.json();",
+                  "  pm.expect(res.user._id).to.exist;",
+                  "  pm.collectionVariables.set(\"user_normal_id\", res.user._id);",
+                  "  pm.collectionVariables.set(\"email_normal\", res.user.email);",
+                  "});",
+                  "",
+                  "pm.test(\"✅ Password NOT exposed\", function() {",
+                  "  const res = pm.response.json();",
+                  "  pm.expect(res.user.password).to.not.exist;",
+                  "});",
+                  "",
+                  "pm.test(\"✅ Permissions array exists\", function() {",
+                  "  const res = pm.response.json();",
+                  "  pm.expect(res.user.permissions).to.be.an('array');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user1_{{timestamp}}@test.com\",\n  \"password\": \"123456\",\n  \"name\": \"Usuario Normal 1\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/register",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "register"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Setup - Login Normal User 1",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"✅ Status 200 OK\", function() {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"✅ Token received\", function() {",
+                  "  const res = pm.response.json();",
+                  "  pm.expect(res.token).to.exist;",
+                  "  pm.expect(res.token).to.be.a('string');",
+                  "  pm.collectionVariables.set(\"token_normal\", res.token);",
+                  "});",
+                  "",
+                  "pm.test(\"✅ User data returned\", function() {",
+                  "  const res = pm.response.json();",
+                  "  pm.expect(res.user).to.exist;",
+                  "});",
+                  "",
+                  "pm.test(\"✅ Password NOT exposed\", function() {",
+                  "  const res = pm.response.json();",
+                  "  pm.expect(res.user.password).to.not.exist;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{email_normal}}\",\n  \"password\": \"123456\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Setup - Register Normal User 2",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"✅ User 2 created\", function() {",
+                  "  pm.response.to.have.status(201);",
+                  "  const res = pm.response.json();",
+                  "  pm.collectionVariables.set(\"user_otro_id\", res.user._id);",
+                  "  pm.collectionVariables.set(\"email_otro\", res.user.email);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user2_{{timestamp}}@test.com\",\n  \"password\": \"123456\",\n  \"name\": \"Usuario Normal 2\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/register",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "register"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Setup - Login Admin",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"✅ Admin login successful\", function() {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"✅ Admin token received\", function() {",
+                  "  const res = pm.response.json();",
+                  "  pm.expect(res.token).to.exist;",
+                  "  pm.collectionVariables.set(\"token_admin\", res.token);",
+                  "});",
+                  "",
+                  "pm.test(\"✅ Admin has permissions\", function() {",
+                  "  const res = pm.response.json();",
+                  "  pm.expect(res.user.permissions).to.be.an('array').that.is.not.empty;",
+                  "  pm.collectionVariables.set(\"admin_id\", res.user._id);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@biblioteca.com\",\n  \"password\": \"admin123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "01 - Auth Validations",
+      "item": [
+        {
+          "name": "Auth - Register with Invalid Email",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"❌ Status 400 Bad Request\", function() {",
+                  "  pm.response.to.have.status(400);",
+                  "});",
+                  "",
+                  "pm.test(\"❌ Error message present\", function() {",
+                  "  const res = pm.response.json();",
+                  "  pm.expect(res.success).to.be.false;",
+                  "  pm.expect(res.message).to.exist;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"invalidemail\",\n  \"password\": \"123456\",\n  \"name\": \"Test\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/register",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "register"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Auth - Register with Short Password",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"❌ Status 400 (short password)\", function() {",
+                  "  pm.response.to.have.status(400);",
+                  "});",
+                  "",
+                  "pm.test(\"❌ Validation error\", function() {",
+                  "  const res = pm.response.json();",
+                  "  pm.expect(res.message.toLowerCase()).to.include.oneOf(['validation', 'password']);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"test{{$randomInt}}@test.com\",\n  \"password\": \"123\",\n  \"name\": \"Test\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/register",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "register"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Auth - Register with Short Name",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"❌ Status 400 (short name)\", function() {",
+                  "  pm.response.to.have.status(400);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"test{{$randomInt}}@test.com\",\n  \"password\": \"123456\",\n  \"name\": \"A\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/register",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "register"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Auth - Register Duplicate Email",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"❌ Status 400 or 409 (duplicate)\", function() {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([400, 409]);",
+                  "});",
+                  "",
+                  "pm.test(\"❌ Error about duplicate/exists\", function() {",
+                  "  const res = pm.response.json();",
+                  "  pm.expect(res.message.toLowerCase()).to.include.oneOf(['exists', 'duplicate', 'already']);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{email_normal}}\",\n  \"password\": \"123456\",\n  \"name\": \"Duplicate\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/register",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "register"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Auth - Login with Wrong Password",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"❌ Status 401 Unauthorized\", function() {",
+                  "  pm.response.to.have.status(401);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{email_normal}}\",\n  \"password\": \"wrongpassword\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Auth - Login with Non-existent Email",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"❌ Status 401 or 404\", function() {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([401, 404]);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"nonexistent@test.com\",\n  \"password\": \"123456\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "02 - Users CRUD",
+      "item": [
+        {
+          "name": "Users - Get Own User (Success)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"✅ Status 200\", function() {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"✅ User data returned\", function() {",
+                  "  const res = pm.response.json();",
+                  "  pm.expect(res.user).to.exist;",
+                  "  pm.expect(res.user._id).to.equal(pm.collectionVariables.get(\"user_normal_id\"));",
+                  "});",
+                  "",
+                  "pm.test(\"✅ Password NOT exposed\", function() {",
+                  "  const res = pm.response.json();",
+                  "  pm.expect(res.user.password).to.not.exist;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_normal}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/users/{{user_normal_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "{{user_normal_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Users - Get User with Invalid ID Format",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"❌ Status 400\", function() {",
+                  "  pm.response.to.have.status(400);",
+                  "});",
+                  "",
+                  "pm.test(\"❌ Invalid ID error\", function() {",
+                  "  const res = pm.response.json();",
+                  "  pm.expect(res.message.toLowerCase()).to.include.oneOf(['invalid', 'format', 'id']);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_normal}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/users/invalid-id-123",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "invalid-id-123"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Users - Get Non-existent User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"❌ Status 404\", function() {",
+                  "  pm.response.to.have.status(404);",
+                  "});",
+                  "",
+                  "pm.test(\"❌ Not found error\", function() {",
+                  "  const res = pm.response.json();",
+                  "  pm.expect(res.message.toLowerCase()).to.include.oneOf(['not found', 'notfound']);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_normal}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/users/507f1f77bcf86cd799439011",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "507f1f77bcf86cd799439011"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Users - Update Own User (Success)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"✅ Status 200\", function() {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"✅ Name updated\", function() {",
+                  "  const res = pm.response.json();",
+                  "  pm.expect(res.user.name).to.equal(\"Nombre Actualizado\");",
+                  "});",
+                  "",
+                  "pm.test(\"✅ Password NOT exposed\", function() {",
+                  "  const res = pm.response.json();",
+                  "  pm.expect(res.user.password).to.not.exist;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_normal}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Nombre Actualizado\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/users/{{user_normal_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "{{user_normal_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Users - Update Other User Without Permission",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"❌ Status 403 Forbidden\", function() {",
+                  "  pm.response.to.have.status(403);",
+                  "});",
+                  "",
+                  "pm.test(\"❌ Permission denied error\", function() {",
+                  "  const res = pm.response.json();",
+                  "  pm.expect(res.message.toLowerCase()).to.include.oneOf(['permission', 'forbidden', 'not allowed']);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_normal}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Intento Hackear\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/users/{{user_otro_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "{{user_otro_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Users - Admin Updates Other User (Success)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"✅ Admin can update\", function() {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"✅ Name updated by admin\", function() {",
+                  "  const res = pm.response.json();",
+                  "  pm.expect(res.user.name).to.equal(\"Actualizado por Admin\");",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_admin}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Actualizado por Admin\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/users/{{user_normal_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "{{user_normal_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Users - Update with Invalid Data (Name too short)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"❌ Status 400 (validation)\", function() {",
+                  "  pm.response.to.have.status(400);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_normal}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"A\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/users/{{user_normal_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "{{user_normal_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Users - Update with Invalid Email",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"❌ Status 400 (invalid email)\", function() {",
+                  "  pm.response.to.have.status(400);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_normal}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"invalidemail\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/users/{{user_normal_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "{{user_normal_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Users - Delete User (Soft Delete)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"✅ Status 200\", function() {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"✅ Delete success message\", function() {",
+                  "  const res = pm.response.json();",
+                  "  pm.expect(res.message.toLowerCase()).to.include.oneOf(['delete', 'removed', 'success']);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_admin}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/users/{{user_otro_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "{{user_otro_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Users - Get Deleted User (Should Fail)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"❌ Status 404 (deleted user)\", function() {",
+                  "  pm.response.to.have.status(404);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_admin}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/users/{{user_otro_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "{{user_otro_id}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "03 - Books CRUD",
+      "item": [
+        {
+          "name": "Books - Create Without Permission",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"❌ Status 403 Forbidden\", function() {",
+                  "  pm.response.to.have.status(403);",
+                  "});",
+                  "",
+                  "pm.test(\"❌ Permission error\", function() {",
+                  "  const res = pm.response.json();",
+                  "  pm.expect(res.message.toLowerCase()).to.include.oneOf(['permission', 'create_books']);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_normal}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Test Book\",\n  \"author\": \"Test Author\",\n  \"genre\": \"Test\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/books",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "books"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Books - Create with Permission (Admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"✅ Status 201 Created\", function() {",
+                  "  pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test(\"✅ Book created with _id\", function() {",
+                  "  const res = pm.response.json();",
+                  "  pm.expect(res.book._id).to.exist;",
+                  "  pm.collectionVariables.set(\"book_id\", res.book._id);",
+                  "});",
+                  "",
+                  "pm.test(\"✅ Book is available by default\", function() {",
+                  "  const res = pm.response.json();",
+                  "  pm.expect(res.book.isAvailable).to.be.true;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_admin}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Libro Test {{timestamp}}\",\n  \"author\": \"Autor Test\",\n  \"genre\": \"Género Test\",\n  \"publisher\": \"Editorial Test\",\n  \"publicationDate\": \"2024-01-15\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/books",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "books"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Books - Create for Reservation Test",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"✅ Reservation book created\", function() {",
+                  "  pm.response.to.have.status(201);",
+                  "  const res = pm.response.json();",
+                  "  pm.collectionVariables.set(\"book_reserved_id\", res.book._id);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_admin}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Libro Para Reservar {{timestamp}}\",\n  \"author\": \"Autor Reserva\",\n  \"genre\": \"Test\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/books",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "books"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Books - Create with Missing Required Fields",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"❌ Status 400 (missing fields)\", function() {",
+                  "  pm.response.to.have.status(400);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_admin}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"genre\": \"Test\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/books",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "books"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Books - Create Duplicate Title",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"❌ Status 409 or 400 (duplicate)\", function() {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([400, 409]);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_admin}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Libro Test {{timestamp}}\",\n  \"author\": \"Autor Test\",\n  \"genre\": \"Test\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/books",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "books"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Books - Get Book by ID (Public)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"✅ Status 200 (public access)\", function() {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"✅ Complete book data returned\", function() {",
+                  "  const res = pm.response.json();",
+                  "  pm.expect(res.book).to.exist;",
+                  "  pm.expect(res.book.title).to.exist;",
+                  "  pm.expect(res.book.author).to.exist;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/books/{{book_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "books",
+                "{{book_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Books - Get Book with Invalid ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"❌ Status 400\", function() {",
+                  "  pm.response.to.have.status(400);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/books/invalid-id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "books",
+                "invalid-id"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Books - List Books No Filters (Public)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"✅ Status 200\", function() {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"✅ Books array exists\", function() {",
+                  "  const res = pm.response.json();",
+                  "  pm.expect(res.books).to.be.an('array');",
+                  "});",
+                  "",
+                  "pm.test(\"✅ Pagination metadata present\", function() {",
+                  "  const res = pm.response.json();",
+                  "  pm.expect(res.pagination).to.exist;",
+                  "  pm.expect(res.pagination.currentPage).to.exist;",
+                  "  pm.expect(res.pagination.totalPages).to.exist;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/books",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "books"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Books - Filter by Author (Case-Insensitive)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"✅ Status 200\", function() {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"✅ Filter works (found books)\", function() {",
+                  "  const res = pm.response.json();",
+                  "  pm.expect(res.books.length).to.be.greaterThan(0);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/books?author=autor test",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "books?author=autor test"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Books - Filter by Title (Partial Match)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"✅ Partial title search works\", function() {",
+                  "  pm.response.to.have.status(200);",
+                  "  const res = pm.response.json();",
+                  "  pm.expect(res.books.length).to.be.greaterThan(0);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/books?title=libro",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "books?title=libro"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Books - Pagination Test",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"✅ Pagination works\", function() {",
+                  "  pm.response.to.have.status(200);",
+                  "  const res = pm.response.json();",
+                  "  pm.expect(res.books.length).to.be.at.most(2);",
+                  "  pm.expect(res.pagination.booksPerPage).to.equal(2);",
+                  "  pm.expect(res.pagination.currentPage).to.equal(1);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/books?page=1&limit=2",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "books?page=1&limit=2"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Books - Filter by Genre",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"✅ Genre filter works\", function() {",
+                  "  pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/books?genre=Test",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "books?genre=Test"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Books - Filter by Available",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"✅ Available filter works\", function() {",
+                  "  pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/books?available=true",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "books?available=true"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Books - Update Without Permission",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"❌ Status 403\", function() {",
+                  "  pm.response.to.have.status(403);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_normal}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"genre\": \"Nuevo Género\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/books/{{book_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "books",
+                "{{book_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Books - Update with Permission (Admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"✅ Status 200\", function() {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"✅ Genre updated\", function() {",
+                  "  const res = pm.response.json();",
+                  "  pm.expect(res.book.genre).to.equal(\"Género Actualizado\");",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_admin}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"genre\": \"Género Actualizado\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/books/{{book_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "books",
+                "{{book_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Books - Delete (Soft Delete)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"✅ Status 200\", function() {",
+                  "  pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_admin}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/books/{{book_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "books",
+                "{{book_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Books - List Without Deleted",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"✅ Deleted book NOT in list\", function() {",
+                  "  pm.response.to.have.status(200);",
+                  "  const res = pm.response.json();",
+                  "  const found = res.books.find(b => b._id === pm.collectionVariables.get(\"book_id\"));",
+                  "  pm.expect(found).to.be.undefined;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/books",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "books"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Books - List With includeDeleted=true",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"✅ includeDeleted shows soft-deleted\", function() {",
+                  "  pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/books?includeDeleted=true",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "books?includeDeleted=true"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "04 - Reservations",
+      "item": [
+        {
+          "name": "Reservations - Reserve Book (Success)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"✅ Status 201 or 200\", function() {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "",
+                  "pm.test(\"✅ Reservation created\", function() {",
+                  "  const res = pm.response.json();",
+                  "  pm.expect(res.reservation).to.exist;",
+                  "  pm.expect(res.reservation._id).to.exist;",
+                  "  pm.collectionVariables.set(\"reservation_id\", res.reservation._id);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_normal}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/books/{{book_reserved_id}}/reserve",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "books",
+                "{{book_reserved_id}}",
+                "reserve"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Reservations - Verify Book Not Available",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"✅ Book marked as unavailable\", function() {",
+                  "  pm.response.to.have.status(200);",
+                  "  const res = pm.response.json();",
+                  "  pm.expect(res.book.isAvailable).to.be.false;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/books/{{book_reserved_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "books",
+                "{{book_reserved_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Reservations - Reserve Already Reserved Book",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"❌ Status 400 (not available)\", function() {",
+                  "  pm.response.to.have.status(400);",
+                  "});",
+                  "",
+                  "pm.test(\"❌ Not available error\", function() {",
+                  "  const res = pm.response.json();",
+                  "  pm.expect(res.message.toLowerCase()).to.include.oneOf(['not available', 'unavailable', 'reserved']);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_admin}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/books/{{book_reserved_id}}/reserve",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "books",
+                "{{book_reserved_id}}",
+                "reserve"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Reservations - Book History (Public)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"✅ Status 200 (public)\", function() {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"✅ History structure present\", function() {",
+                  "  const res = pm.response.json();",
+                  "  pm.expect(res.reservations).to.be.an('array');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/books/{{book_reserved_id}}/history",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "books",
+                "{{book_reserved_id}}",
+                "history"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Reservations - User Reservations (Owner)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"✅ Status 200\", function() {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"✅ Has user reservations\", function() {",
+                  "  const res = pm.response.json();",
+                  "  pm.expect(res.reservations).to.be.an('array');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_normal}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/users/{{user_normal_id}}/reservations",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "{{user_normal_id}}",
+                "reservations"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Reservations - Return Book (Success)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"✅ Status 200\", function() {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"✅ returnDate now set\", function() {",
+                  "  const res = pm.response.json();",
+                  "  pm.expect(res.reservation.returnDate).to.not.be.null;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_normal}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/reservations/{{reservation_id}}/return",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "reservations",
+                "{{reservation_id}}",
+                "return"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Reservations - Verify Book Available Again",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"✅ Book available again\", function() {",
+                  "  pm.response.to.have.status(200);",
+                  "  const res = pm.response.json();",
+                  "  pm.expect(res.book.isAvailable).to.be.true;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/books/{{book_reserved_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "books",
+                "{{book_reserved_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Reservations - Return Already Returned Book",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"❌ Status 400 (already returned)\", function() {",
+                  "  pm.response.to.have.status(400);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_normal}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/reservations/{{reservation_id}}/return",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "reservations",
+                "{{reservation_id}}",
+                "return"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Reservations - Reserve Book Again (Should Work)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"✅ Can reserve again after return\", function() {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_admin}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/books/{{book_reserved_id}}/reserve",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "books",
+                "{{book_reserved_id}}",
+                "reserve"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Reservations - Get User Reservations with Status Filter",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"✅ Status filter works\", function() {",
+                  "  pm.response.to.have.status(200);",
+                  "  const res = pm.response.json();",
+                  "  pm.expect(res.reservations).to.be.an('array');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_normal}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/users/{{user_normal_id}}/reservations?status=all",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "{{user_normal_id}}",
+                "reservations?status=all"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "05 - Edge Cases & Security",
+      "item": [
+        {
+          "name": "Security - Request Without Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"❌ Status 401 (no token)\", function() {",
+                  "  pm.response.to.have.status(401);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/users/{{user_normal_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "{{user_normal_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Security - Invalid Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"❌ Status 401 (invalid token)\", function() {",
+                  "  pm.response.to.have.status(401);",
+                  "});",
+                  "",
+                  "pm.test(\"❌ Invalid token error\", function() {",
+                  "  const res = pm.response.json();",
+                  "  pm.expect(res.message.toLowerCase()).to.include.oneOf(['invalid', 'token', 'unauthorized']);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer invalid_token_123"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/users/{{user_normal_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "{{user_normal_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Security - Malformed Authorization Header",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"❌ Status 401 (malformed header)\", function() {",
+                  "  pm.response.to.have.status(401);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "InvalidFormat"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/users/{{user_normal_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "{{user_normal_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Edge Case - Pagination with Invalid Page",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"❌ Status 400 (invalid page)\", function() {",
+                  "  pm.response.to.have.status(400);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/books?page=abc",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "books?page=abc"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Edge Case - Pagination with Negative Limit",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"❌ Status 400 (negative limit)\", function() {",
+                  "  pm.response.to.have.status(400);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/books?limit=-5",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "books?limit=-5"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Edge Case - Reserve with Invalid Book ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"❌ Status 400\", function() {",
+                  "  pm.response.to.have.status(400);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_normal}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/books/invalid-id/reserve",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "books",
+                "invalid-id",
+                "reserve"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Edge Case - Reserve Non-existent Book",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"❌ Status 404\", function() {",
+                  "  pm.response.to.have.status(404);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_normal}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/books/507f1f77bcf86cd799439011/reserve",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "books",
+                "507f1f77bcf86cd799439011",
+                "reserve"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Edge Case - Update Book with Invalid Date",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"❌ Status 400 (invalid date)\", function() {",
+                  "  pm.response.to.have.status(400);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_admin}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"publicationDate\": \"invalid-date\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/books/{{book_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "books",
+                "{{book_id}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

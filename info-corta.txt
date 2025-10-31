@@ -1,0 +1,148 @@
+=== ARCHIVOS ===
+.env
+.env.example
+.gitignore
+build-postman-collection.js
+CHECKLIST.md
+dist
+info-corta.txt
+node_modules
+package-lock.json
+package.json
+postman-collection.json
+QUICK-START-TESTING.md
+README.md
+report.html
+scripts
+src
+test-auth.md
+test-books.md
+TEST-INSTRUCTIONS.md
+test-reservations.md
+test-users.md
+TESTING-README.md
+TESTING-SUMMARY.md
+tsconfig.json
+
+=== SRC ===
+auth
+books
+config
+index.ts
+middleware
+reservations
+types
+users
+
+=== .GITIGNORE ===
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+
+# Environment variables
+.env
+.env.local
+.env.development
+.env.production
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS specific files
+.DS_Store
+Thumbs.db
+
+# Database files
+*.db
+*.sqlite
+
+# Coverage reports
+coverage/
+
+# Test reports
+test-report.html
+newman/
+
+# IDE specific files
+.idea/
+.vscode/
+*.sublime-*
+
+# Temporary files
+.tmp/
+temp/
+
+=== GIT STATUS ===
+On branch main
+Your branch is up to date with 'origin/main'.
+
+Changes not staged for commit:
+  (use "git add/rm <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   .gitignore
+	modified:   README.md
+	deleted:    env.example
+	deleted:    jest.config.js
+	modified:   package-lock.json
+	modified:   package.json
+	deleted:    prisma/schema.prisma
+	deleted:    proyecto-01.pdf
+	deleted:    quick-test.js
+	deleted:    simple-test.js
+	deleted:    src/controllers/auth.controller.ts
+	deleted:    src/controllers/book.controller.ts
+	deleted:    src/controllers/reservation.controller.ts
+	deleted:    src/controllers/user.controller.ts
+	modified:   src/index.ts
+	modified:   src/middleware/auth.middleware.ts
+	modified:   src/middleware/error.middleware.ts
+	deleted:    src/middleware/notFound.middleware.ts
+	deleted:    src/middleware/validation.middleware.ts
+	deleted:    src/routes/auth.routes.ts
+	deleted:    src/routes/book.routes.ts
+	deleted:    src/routes/reservation.routes.ts
+	deleted:    src/routes/user.routes.ts
+	deleted:    src/services/auth.service.ts
+	deleted:    src/services/book.service.ts
+	deleted:    src/services/reservation.service.ts
+	deleted:    src/services/user.service.ts
+	deleted:    src/tests/auth.test.ts
+	deleted:    src/tests/books.test.ts
+	deleted:    src/tests/reservations.test.ts
+	deleted:    src/tests/setup.ts
+	modified:   src/types/index.ts
+	deleted:    test-api.ps1
+	deleted:    test-setup.js
+	modified:   tsconfig.json
+	deleted:    verify-requirements.js
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	.env.example
+	CHECKLIST.md
+	QUICK-START-TESTING.md
+	TEST-INSTRUCTIONS.md
+	TESTING-README.md
+	TESTING-SUMMARY.md
+	build-postman-collection.js
+	info-corta.txt
+	postman-collection.json
+	report.html
+	scripts/
+	src/auth/
+	src/books/
+	src/config/
+	src/middleware/validators.ts
+	src/reservations/
+	src/users/
+	test-auth.md
+	test-books.md
+	test-reservations.md
+	test-users.md
+
+no changes added to commit (use "git add" and/or "git commit -a")
